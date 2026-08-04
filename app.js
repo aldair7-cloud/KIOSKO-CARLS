@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 /* ═══════════════════════════════════════════════════
    CARL'S JR — KIOSCO CLIENTE
@@ -1756,38 +1756,23 @@ function animateDcBar(pct) {
 }
 
 /* ─── IMPRESIÓN SILENCIOSA DEL TICKET ───
-   El navegador envía el ticket al proceso local print-helper.js. Ese proceso
-   corre en el mismo Windows del kiosco y escribe directamente en la impresora.
-   Si el ayudante no está disponible, se permite reintentar, pero nunca se llama
-   a window.print(), porque eso abriría el diálogo de impresión. */
-const PRINT_HELPER_URL = 'http://127.0.0.1:5217/imprimir';
-
+   El kiosco publica el ticket en Firebase. El ayudante local de Windows
+   escucha esa cola y lo envía a la Bixolon sin abrir ninguna ventana. */
 function printTicketSilently(orderNum, text) {
-  fetch(PRINT_HELPER_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      orderNum,
-      text
-    }),
-  })
-    .then(async response => {
-      const result = await response.json();
+  const btnPrint = $('btnPrintTicket');
 
-      if (!response.ok || !result.ok) {
-        throw new Error(result.error || `Error HTTP ${response.status}`);
-      }
+  if (typeof CJSync === 'undefined' || typeof CJSync.queuePrint !== 'function') {
+    console.warn('[Tickets] La cola de impresión de Firebase no está disponible.');
+    if (btnPrint) {
+      btnPrint.disabled = false;
+      btnPrint.textContent = '🖨️ Reintentar impresión';
+    }
+    return;
+  }
 
-      return result;
-    })
+  CJSync.queuePrint(orderNum, text)
     .then(() => {
-      const btnPrint = $('btnPrintTicket');
-
-      console.log(
-        `[Tickets] pedido-${orderNum}.txt enviado a la impresora.`
-      );
+      console.log(`[Tickets] pedido-${orderNum}.txt impreso correctamente.`);
 
       if (btnPrint) {
         btnPrint.disabled = true;
@@ -1795,15 +1780,9 @@ function printTicketSilently(orderNum, text) {
       }
     })
     .catch(error => {
-      console.warn(
-        '[Tickets] No se pudo conectar con print-helper.js o la impresora:',
-        error
-      );
+      console.warn('[Tickets] No se pudo imprimir mediante Firebase:', error);
 
-      // No usamos window.print() como respaldo porque abriría el diálogo
-      // de impresión de Windows, algo que no debe ocurrir en el kiosco.
-      const btnPrint = $('btnPrintTicket');
-
+      // No usamos window.print() porque abriría el diálogo de impresión.
       if (btnPrint) {
         btnPrint.disabled = false;
         btnPrint.textContent = '🖨️ Reintentar impresión';
