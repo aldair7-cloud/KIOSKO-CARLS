@@ -16,7 +16,7 @@ const PORT = 5217;
 const TICKETS_DIR = path.join(__dirname, 'tickets-impresos');
 
 // Debe coincidir EXACTAMENTE con el nombre compartido de la Bixolon.
-const PRINTER_SHARE = 'TICKETS';
+const PRINTER_SHARE = 'BIXOLON_TICKETS';
 const PRINTER_PATH = `\\\\localhost\\${PRINTER_SHARE}`;
 
 if (!fs.existsSync(TICKETS_DIR)) {
