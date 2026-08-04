@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#CC0000" />
+  <title>Carl's Jr — Haz tu pedido</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<div id="kiosk-root">
+
+  <!-- ───────────── PANTALLA DE BIENVENIDA ───────────── -->
+  <section id="welcome" class="welcome" aria-label="Bienvenida">
+    <div class="welcome-bg"></div>
+    <div class="welcome-console"></div>
+
+    <!-- Selector de idioma -->
+    <div class="lang-switcher welcome-lang">
+      <button id="btnLangEs" class="lang-btn lang-mx active" data-lang="es" type="button" title="Español">
+        <span class="lang-flag"></span>
+        <span class="lang-label">ES</span>
+      </button>
+      <button id="btnLangEn" class="lang-btn lang-us" data-lang="en" type="button" title="English">
+        <span class="lang-flag"></span>
+        <span class="lang-label">EN</span>
+      </button>
+    </div>
+
+    <!-- Pedestal giratorio con hamburguesas rotando (coverflow) -->
+    <div class="welcome-stage" id="welcomeSlider" aria-hidden="true">
+      <img referrerpolicy="no-referrer" class="ws-slide" src="https://carlsjr.es/wp-content/uploads/2025/06/Single-BaconCheese-Gran-Angus_500x500px.png" alt="">
+      <img referrerpolicy="no-referrer" class="ws-slide" src="https://carlsjr.es/wp-content/uploads/2023/04/Diseno-sin-titulo-2024-06-19T125728.106.png" alt="">
+      <img referrerpolicy="no-referrer" class="ws-slide" src="https://carlsjr.es/wp-content/uploads/2023/04/Western-Bacon-Cheeseburger-nueva.png" alt="">
+      <img referrerpolicy="no-referrer" class="ws-slide" src="https://carlsjr.es/wp-content/uploads/2025/12/Bacon_trufa_single.png" alt="">
+      <img referrerpolicy="no-referrer" class="ws-slide" src="https://carlsjr.es/wp-content/uploads/2023/04/Diseno-sin-titulo-2024-05-30T111453.743.png" alt="">
+      <img referrerpolicy="no-referrer" class="ws-slide" src="https://carlsjr.es/wp-content/uploads/2023/03/Moving-Mountains-Famous-Star-1.png" alt="">
+    </div>
+    <div class="welcome-platform"></div>
+    <div class="ws-dots" id="wsDots"></div>
+
+    <div class="welcome-text">
+      <p class="welcome-eyebrow" data-i18n="eyebrow">Bigger. Better. Burgers.</p>
+      <h1 class="welcome-title" data-i18n="title">Haz tu pedido<br>a lo grande</h1>
+    </div>
+    <button id="btnStart" class="btn-start" type="button">
+      <span class="btn-start-inner" data-i18n="btnGuest">Continuar</span>
+    </button>
+  </section>
+
+  <!-- ───────────── APP PRINCIPAL ───────────── -->
+  <div id="app" class="app" hidden>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button id="btnBackToWelcome" class="topbar-logo-hit" type="button" aria-label="Inicio"></button>
+      <div class="topbar-right">
+        <div class="topbar-points" id="pointsDisplay" aria-label="Tus puntos">
+          <span class="points-icon">⭐</span>
+          <span id="pointsValue">0</span> <span class="points-label">pts</span>
+        </div>
+        <a href="./index.html" class="topbar-demo-back" title="Volver al inicio de la demo">⬡ Demo</a>
+      </div>
+    </header>
+
+    <!-- NAV CATEGORIAS -->
+    <nav class="cat-nav" id="catNav" aria-label="Categorías"></nav>
+
+    <!-- MAIN -->
+    <main class="main" id="main">
+
+      <!-- Vista: Catálogo -->
+      <section id="viewCatalog" class="view active">
+        <!-- Banner de reto del día -->
+        <button class="daily-challenge" id="dailyChallenge" type="button" aria-label="Añadir Crisscuts al pedido">
+          <div class="dc-icon">🏆</div>
+          <div class="dc-text">
+            <strong id="dcTitle">Reto del día:</strong> <span id="dcText">Toca aquí para añadir Crisscuts y ganar</span> <span class="dc-pts" id="dcPts">+50 puntos</span>
+          </div>
+          <div class="dc-progress"><div class="dc-bar" id="dcBar" style="width:0%"></div></div>
+        </button>
+
+        <!-- Grid de productos -->
+        <div id="productGrid" class="product-grid" aria-live="polite"></div>
+
+        <!-- Upsell banner (aparece contextualmente) -->
+        <div id="upsellBanner" class="upsell-banner" hidden>
+          <div class="upsell-inner">
+            <span class="upsell-emoji">🔥</span>
+            <div class="upsell-copy">
+              <strong id="upsellTitle"></strong>
+              <p id="upsellDesc"></p>
+            </div>
+            <button id="upsellBtn" class="upsell-action" type="button"></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista: Quiz IA -->
+      <section id="viewQuiz" class="view">
+        <div class="quiz-wrap">
+          <div class="quiz-head">
+            <button id="btnQuizBack" class="quiz-back" type="button">← Volver</button>
+            <div class="quiz-progress-wrap">
+              <div class="quiz-progress-bar"><div id="quizBar" class="quiz-bar-fill"></div></div>
+              <span id="quizStep" class="quiz-step-label">1 / 5</span>
+            </div>
+          </div>
+          <div id="quizContent" class="quiz-content"></div>
+          <div id="quizResults" class="quiz-results"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FLOATING CART BUTTON -->
+    <button id="btnCartFab" class="fab-cart" type="button" aria-label="Ver pedido">
+      <span class="fab-cart-icon">🛒</span>
+      <span class="fab-cart-text" id="fabCartText">Mi pedido</span>
+      <span id="fabCartBadge" class="fab-cart-badge" hidden>0</span>
+    </button>
+
+  </div>
+
+  <!-- ───────────── PANEL CARRITO ───────────── -->
+  <aside id="cartPanel" class="cart-panel" aria-label="Tu pedido" aria-hidden="true">
+    <div class="cart-header">
+      <h2 class="cart-title" id="cartTitleEl">Tu pedido</h2>
+      <button id="btnCloseCart" class="cart-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div id="cartItems" class="cart-items"></div>
+    <div id="cartUpsell" class="cart-upsell" hidden></div>
+    <div class="cart-footer">
+      <div class="cart-totals" id="cartTotals"></div>
+      <button id="btnCheckout" class="btn-checkout" type="button" disabled>
+        <span id="payBtnLabel">Pagar</span> · <span id="checkoutTotal">$0.00</span>
+      </button>
+    </div>
+  </aside>
+  <div id="cartOverlay" class="cart-overlay" hidden></div>
+
+  <!-- ───────────── DIALOG PRODUCTO ───────────── -->
+  <dialog id="productDialog" class="product-dialog" aria-labelledby="pdTitle">
+    <button class="pd-close" id="pdClose" type="button" aria-label="Cerrar">✕</button>
+    <div id="pdContent" class="pd-content"></div>
+  </dialog>
+
+  <!-- ───────────── DIALOG CHECKOUT ───────────── -->
+  <dialog id="checkoutDialog" class="checkout-dialog">
+    <div class="checkout-wrap">
+      <div class="checkout-success" id="checkoutSuccess" hidden>
+        <div class="success-anim">🎉</div>
+        <h2 id="orderPlacedTitle">¡Pedido enviado!</h2>
+        <p id="successOrderId" class="order-id"></p>
+        <p class="success-points" id="successPointsRow"></p>
+        <div id="orderSummary" class="order-summary"></div>
+        <div id="ticketDigitalBox" class="ticket-digital-box"></div>
+        <!-- El ticket solo se imprime si el cliente lo pide aquí -->
+        <button id="btnPrintTicket" class="btn-print-ticket" type="button">🖨️ Imprimir ticket</button>
+        <div id="countdownBox" class="countdown-box">
+          <div class="countdown-ring"><span id="countdownVal">12</span></div>
+          <p id="countdownMsg"></p>
+        </div>
+        <button id="btnNewOrder" class="btn-start" type="button">
+          <span class="btn-start-inner" id="newOrderLabel">Nuevo pedido</span>
+        </button>
+      </div>
+      <div class="checkout-payment" id="checkoutPayment">
+        <h2 id="howPayTitle">¿Cómo pagas?</h2>
+        <div class="payment-grid" id="paymentGrid"></div>
+        <p id="payMethodHint" class="pay-hint" hidden></p>
+        <!-- INC-05: el cobro con tarjeta se realiza en el datáfono, no se piden datos en pantalla -->
+        <div id="stripe-element-wrap" hidden style="margin:16px 0 4px">
+          <div id="stripe-payment-element"></div>
+        </div>
+        <button id="btnPay" class="btn-checkout" type="button" id="confirmPayBtn">Confirmar pago</button>
+        <button id="btnCancelCheckout" class="btn-secondary" type="button" id="backOrderBtn">Volver al pedido</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ───────────── DIALOG COMBO CONFIGURADOR ───────────── -->
+  <dialog id="comboDialog" class="combo-dialog" aria-labelledby="comboTitle">
+    <button class="pd-close" id="comboClose" type="button" aria-label="Cerrar">✕</button>
+    <div id="comboContent" class="combo-content"></div>
+  </dialog>
+
+  <!-- ───────────── DIALOG REGISTRO (desde checkout) ───────────── -->
+  <dialog id="registerDialog" class="register-dialog" aria-labelledby="rdTitleEl">
+    <button class="pd-close" id="rdClose" type="button" aria-label="Cerrar">✕</button>
+    <div class="rd-content">
+      <h2 id="rdTitleEl" data-i18n="rdTitle">Crea tu cuenta</h2>
+      <p id="rdSubEl" data-i18n="rdSub">Recibe tu ticket y acumula puntos en cada visita ⭐</p>
+      <form id="registerForm" class="ls-form" novalidate>
+        <label class="ls-field">
+          <span data-i18n="rdName">Tu nombre</span>
+          <input id="rdNameInput" type="text" placeholder="Ej. María" autocomplete="given-name" inputmode="text" enterkeyhint="next" required />
+        </label>
+        <label class="ls-field">
+          <span data-i18n="rdEmail">Email</span>
+          <input id="rdEmailInput" type="email" placeholder="maria@email.com" autocomplete="email" inputmode="email" enterkeyhint="done" required />
+        </label>
+        <button type="submit" class="btn-start ls-submit">
+          <span class="btn-start-inner" data-i18n="rdSubmit">¡Registrarme y recibir ticket! ⭐</span>
+        </button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Filtro SVG de nitidez para fotos del attract mode -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="sharpen" x="0" y="0" width="100%" height="100%" color-interpolation-filters="linearRGB">
+        <feConvolveMatrix order="3"
+          kernelMatrix="0 -0.6 0  -0.6 3.4 -0.6  0 -0.6 0"
+          divisor="1" bias="0" preserveAlpha="true"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- ATTRACT MODE (vídeos promocionales en reposo) -->
+  <div id="attractScreen" class="attract-screen" hidden aria-hidden="true">
+    <video id="attractVideo" class="attract-video" muted playsinline autoplay preload="auto"></video>
+    <img  id="attractPhoto" class="attract-photo" src="" alt="" hidden />
+    <div class="attract-tap-hint">Toca para pedir</div>
+  </div>
+
+  <!-- CONFETTI CANVAS -->
+  <canvas id="confetti" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="./sync-final.js?v=20260804-1655"></script>
+  <script src="./app.js?v=20260804-1655"></script>
+</div><!-- /kiosk-root -->
+</body>
+</html>
+
